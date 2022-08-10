@@ -1,3 +1,4 @@
+let hist1 = document.createElement("button");
 //search  OpenWeather One Call API for city
 // save to local storage
 // display last 5 cities in search-history
@@ -6,17 +7,16 @@ let today = moment().format("MM/DD/YYYY");
 let queryURL;
 
 console.log(today);
+getHistory();
 
-var apiKey = "1ae665f43747a0f78a49241d740d7b7e";
+var apiKey = "72055e427a01724fa3fd9ce3dd2c9a97";
 let currentWeather = [];
 
 $(".search-btn").click(function () {
-  console.log("clicked search");
-  city = document.getElementById("city-picker").value;
-  console.log("new " + city);
   makeQueryUrl();
   console.log(queryURL);
   getCurrent();
+  getForecast();
 });
 
 function makeQueryUrl() {
@@ -35,31 +35,41 @@ function getCurrent() {
     })
     .then((loadedWeather) => {
       currentWeather = loadedWeather;
-      console.log(currentWeather.main.temp);
+      loadCurrent();
     })
+    /*city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index*/
     .catch((err) => {
       console.error(err);
     });
 }
-/*
-  .then(loadedQuestions => {
-    console.log(loadedQuestions.results);
-    questions = loadedQuestions.results.map(loadedQuestion => {
-      const formattedQuestion = {
-        question: loadedQuestion.question
-      };
 
-      const answerChoices = [... loadedQuestion.incorrect_answers];
-      formattedQuestion.answer = Math.floor(Math.random() * 3) + 1;
-      answerChoices.splice(
-        formattedQuestion.answer -1, 
-        0, 
-        loadedQuestion.correct_answer);
+function loadCurrent() {
+  //create elements when current weather is loaded
+  console.log(currentWeather);
+  hist1.classList.add("btn", "search-btn", "hist1");
+  hist1.innerHTML = city;
+  $(".city-search").append(hist1);
 
-      answerChoices.forEach((choice, index) => {
-        formattedQuestion["choice" + (index + 1)] = choice;
-      })
-      return formattedQuestion;
-    });
-  })
-*/
+  console.log(city + " (" + today + ")");
+  console.log(currentWeather.weather[0].icon);
+  console.log("Temperature " + currentWeather.main.temp + "°");
+  console.log("Humidity " + currentWeather.main.humidity + "%");
+  console.log(
+    "Wind from " +
+      currentWeather.wind.deg +
+      " degrees at " +
+      currentWeather.wind.speed +
+      " mph"
+  );
+  console.log("UV index - missing");
+}
+
+function getForecast() {
+  console.log("forecast");
+}
+
+function getHistory() {
+  for (var i = 0; i <= 4; i++) {
+    console.log(i);
+  }
+}

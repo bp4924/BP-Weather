@@ -23,7 +23,7 @@ h1 {
 
 .city-list {
   height: 30rem;
-  width: 30%;
+  width: 20%;
   margin: 1.75rem;
   background: transparent;
   border: 0.2rem dashed var(--dark);
@@ -33,6 +33,7 @@ h1 {
   width: 90%;
   border-radius: 0.5rem;
   margin: 1.5rem;
+  margin-bottom: 0;
   font-size: 2rem;
   font-style: italic;
 }
@@ -47,7 +48,7 @@ h1 {
   height: 3rem;
   font-size: 1.5rem;
 }
-
+/*
 .search-btn::after {
   content: " ";
   display: block;
@@ -55,10 +56,10 @@ h1 {
   background: var(--dark);
   height: 0.2rem;
   margin: 2rem 0;
-}
+}*/
 
 .weather-conditions {
-  width: 62.5%;
+  width: 75%;
   margin-top: 1.5rem;
   height: 15rem;
   background-color: var(--lighter);
