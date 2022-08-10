@@ -18,12 +18,9 @@ body {
 }
 
 h1 {
-  font-weight: 700;
+  font-weight: bolder;
 }
 
-.tiles {
-  margin: 0;
-}
 .city-list {
   height: 30rem;
   width: 30%;
@@ -36,6 +33,7 @@ h1 {
   width: 90%;
   border-radius: 0.5rem;
   margin: 1.5rem;
+  font-size: 2rem;
   font-style: italic;
 }
 
@@ -58,13 +56,56 @@ h1 {
   height: 0.2rem;
   margin: 2rem 0;
 }
+
 .weather-conditions {
   width: 62.5%;
   margin-top: 1.5rem;
   height: 15rem;
   background-color: var(--lighter);
 }
+
 .current-weather {
   width: 100%;
   height: 100%;
+}
+
+.card {
+  align-items: center;
+  font-size: 2rem;
+}
+
+.five-day {
+  height: 15rem;
+}
+
+.day {
+  justify-content: space-evenly;
+  width: 20%;
+  margin: 0.5rem;
+  height: 15rem;
+}
+
+#day1 {
+  margin-left: 0;
+}
+#day5 {
+  margin-right: 0;
+}
+
+@media (max-width: 500px) {
+  .city-list {
+    width: 100%;
+    border: none;
+    align-items: center;
+  }
+
+  .weather-conditions {
+    width: 90%;
+    flex-wrap: wrap;
+  }
+  .day {
+    min-width: 20rem;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
 }
