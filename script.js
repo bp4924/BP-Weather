@@ -61,14 +61,6 @@ function getCityCoords() {
       console.error(err);
     });
 }
-function loadLatLon() {
-  lat = 32;
-  lon = -81;
-  /*
-  lat = curCity.features[0].bbox[1];
-  lon = curCity.features[0].bbox[0];
-  */
-}
 
 console.log(today);
 //getHistory();
