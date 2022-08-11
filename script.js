@@ -1,8 +1,13 @@
 let hist1 = document.createElement("button");
+let currentWxCity = document.createElement("div");
+let wxIconImg = document.createElement("img");
+let currentTemp = document.createElement("div");
+let currentHumidity = document.createElement("div");
+let currentWind = document.createElement("div");
+let currentUVindex = document.createElement("div");
 //search  OpenWeather One Call API for city
 // save to local storage
 // display last 5 cities in search-history
-//var city = "Nome";
 let city;
 let today = moment().format("MM/DD/YYYY");
 let queryURL;
@@ -53,13 +58,40 @@ function loadCurrent() {
   localStorage.setItem("City", city);
   hist1.classList.add("btn", "search-btn", "hist1");
   hist1.innerHTML = city;
-  $(".city-search").append(hist1);
+  $(".city-search").append(hist1); // place button on page for search history
+  //
+  // place city & date on page
+  let cityString = city + " (" + today + ")";
+  currentWxCity.classList.add("current-wx");
+  currentWxCity.innerHTML = cityString;
+  $(".current-weather").append(currentWxCity);
 
-  console.log(city + " (" + today + ")");
+  // ----------------
+  //generate & place icon
   let wxIconCode = currentWeather.weather[0].icon;
   console.log(wxIconCode);
   let wxIcon = `http://openweathermap.org/img/wn/${wxIconCode}.png`;
+  wxIconImg.src = wxIcon;
+  wxIconImg.setAttribute("style", "height: 1.5rem");
+  $(".current-weather").append(wxIconImg);
   console.log(wxIcon);
+  //
+  // place remainder of data
+  currentTemp.innerHTML = currentWeather.main.temp + "°";
+  $(".current-weather").append(currentTemp);
+  currentHumidity.innerHTML = currentWeather.main.humidity + "%";
+  $(".current-weather").append(currentHumidity);
+  currentWind.innerHTML =
+    "Wind from " +
+    currentWeather.wind.deg +
+    " degrees at " +
+    currentWeather.wind.speed +
+    " mph";
+  $(".current-weather").append(currentWind);
+
+  currentUVindex.innerHTML = "UV index - missing";
+  $(".current-weather").append(currentUVindex);
+
   console.log("Temperature " + currentWeather.main.temp + "°");
   console.log("Humidity " + currentWeather.main.humidity + "%");
   console.log(
