@@ -1,40 +1,102 @@
 let hist1 = document.createElement("button");
+
 let currentWxCity = document.createElement("div");
 let wxIconImg = document.createElement("img");
 let currentTemp = document.createElement("div");
 let currentHumidity = document.createElement("div");
 let currentWind = document.createElement("div");
 let currentUVindex = document.createElement("div");
-//search  OpenWeather One Call API for city
+
+let today = moment().format("MM/DD/YYYY");
+
+// TODO: ------
 // save to local storage
 // display last 5 cities in search-history
+
 let city;
-let today = moment().format("MM/DD/YYYY");
+let curCity = [];
+
+let cityCoord;
+let lat = 34;
+let lon = -84;
+//let lat;
+//let lon;
+
 let queryURL;
-
-console.log(today);
-getHistory();
-
-var apiKey = "72055e427a01724fa3fd9ce3dd2c9a97";
-let currentWeather = [];
 
 $(".search-btn").click(function () {
   city = document.getElementById("city-picker").value;
-  //  let city = $("#city-picker").value;
-  console.log(city);
+  console.log("city= " + city);
+
+  // get coordinates for selected city
+  makeCityQuery();
+  getCityCoords();
+
+  // get weather for selected city
   makeQueryUrl();
-  console.log(queryURL);
   getCurrent();
   getForecast();
 });
 
-function makeQueryUrl() {
-  queryURL =
-    "https://api.openweathermap.org/data/2.5/weather?q=" +
+function makeCityQuery() {
+  cityCoord =
+    "https://api.geoapify.com/v1/geocode/search?text=" +
     city +
+    "&apiKey=92450b90549f40a9970b46139ae2ed67";
+  console.log(cityCoord);
+}
+
+function getCityCoords() {
+  fetch(cityCoord)
+    .then((res) => {
+      return res.json();
+    })
+    .then((loadedCity) => {
+      curCity = loadedCity;
+      console.log(curCity);
+
+      loadLatLon();
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
+function loadLatLon() {
+  lat = 32;
+  lon = -81;
+  /*
+  lat = curCity.features[0].bbox[1];
+  lon = curCity.features[0].bbox[0];
+  */
+}
+
+console.log(today);
+//getHistory();
+
+var apiKey = "72055e427a01724fa3fd9ce3dd2c9a97"; // openweather api key
+let currentWeather = [];
+
+function loadLatLon() {
+  lat = 32;
+  lon = -81;
+  /*
+  lat = curCity.features[0].bbox[1];
+  lon = curCity.features[0].bbox[0];
+  */
+}
+
+function makeQueryUrl() {
+  console.log(curCity);
+
+  queryURL =
+    "https://api.openweathermap.org/data/3.0/onecall?lat=" +
+    lat +
+    "&lon=" +
+    lon +
     "&appid=" +
     apiKey +
     "&units=imperial";
+  console.log(queryURL);
 }
 
 function getCurrent() {
@@ -68,40 +130,41 @@ function loadCurrent() {
 
   // ----------------
   //generate & place icon
-  let wxIconCode = currentWeather.weather[0].icon;
+  let wxIconCode = currentWeather.current.weather[0].icon;
   console.log(wxIconCode);
   let wxIcon = `http://openweathermap.org/img/wn/${wxIconCode}.png`;
   wxIconImg.src = wxIcon;
-  wxIconImg.setAttribute("style", "height: 1.5rem");
+  wxIconImg.setAttribute("style", "height: 2rem");
   $(".current-weather").append(wxIconImg);
   console.log(wxIcon);
   //
   // place remainder of data
-  currentTemp.innerHTML = currentWeather.main.temp + "°";
+  currentTemp.innerHTML = "Temperature: " + currentWeather.current.temp + "°";
   $(".current-weather").append(currentTemp);
-  currentHumidity.innerHTML = currentWeather.main.humidity + "%";
+  currentHumidity.innerHTML =
+    "Humidity: " + currentWeather.current.humidity + "%";
   $(".current-weather").append(currentHumidity);
   currentWind.innerHTML =
     "Wind from " +
-    currentWeather.wind.deg +
+    currentWeather.current.wind_deg +
     " degrees at " +
-    currentWeather.wind.speed +
+    currentWeather.current.wind_speed +
     " mph";
   $(".current-weather").append(currentWind);
 
-  currentUVindex.innerHTML = "UV index - missing";
+  currentUVindex.innerHTML = "UV index: " + currentWeather.current.uvi;
   $(".current-weather").append(currentUVindex);
 
-  console.log("Temperature " + currentWeather.main.temp + "°");
-  console.log("Humidity " + currentWeather.main.humidity + "%");
+  console.log("Temperature " + currentWeather.current.temp + "°");
+  console.log("Humidity " + currentWeather.current.humidity + "%");
   console.log(
     "Wind from " +
-      currentWeather.wind.deg +
+      currentWeather.current.wind_deg +
       " degrees at " +
-      currentWeather.wind.speed +
+      currentWeather.current.wind_speed +
       " mph"
   );
-  console.log("UV index - missing");
+  console.log("UV index: " + currentWeather.current.uvi);
 }
 
 function getForecast() {
