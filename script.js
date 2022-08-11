@@ -3,6 +3,7 @@ let hist1 = document.createElement("button");
 // save to local storage
 // display last 5 cities in search-history
 //var city = "Nome";
+let city;
 let today = moment().format("MM/DD/YYYY");
 let queryURL;
 
@@ -13,6 +14,9 @@ var apiKey = "72055e427a01724fa3fd9ce3dd2c9a97";
 let currentWeather = [];
 
 $(".search-btn").click(function () {
+  city = document.getElementById("city-picker").value;
+  //  let city = $("#city-picker").value;
+  console.log(city);
   makeQueryUrl();
   console.log(queryURL);
   getCurrent();
@@ -46,12 +50,16 @@ function getCurrent() {
 function loadCurrent() {
   //create elements when current weather is loaded
   console.log(currentWeather);
+  localStorage.setItem("City", city);
   hist1.classList.add("btn", "search-btn", "hist1");
   hist1.innerHTML = city;
   $(".city-search").append(hist1);
 
   console.log(city + " (" + today + ")");
-  console.log(currentWeather.weather[0].icon);
+  let wxIconCode = currentWeather.weather[0].icon;
+  console.log(wxIconCode);
+  let wxIcon = `http://openweathermap.org/img/wn/${wxIconCode}.png`;
+  console.log(wxIcon);
   console.log("Temperature " + currentWeather.main.temp + "°");
   console.log("Humidity " + currentWeather.main.humidity + "%");
   console.log(
