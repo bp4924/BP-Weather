@@ -23,7 +23,6 @@
   </head>
   <body>
     <!--jumbotron-->
-
     <header class="jumbotron">
       <h1 class="display-3">Weather Dashboard</h1>
     </header>
@@ -32,7 +31,12 @@
         <!--city search-->
         <div class="card city-list">
           <div class="display-4 city-search">
-            <input type="text" class="city-picker" placeholder="Enter a city" />
+            <input
+              type="text"
+              class="city-picker"
+              id="city-picker"
+              placeholder="Choose a city"
+            />
             <br />
             <button class="btn search-btn">Search</button>
             <ul class="search-history">
@@ -43,12 +47,21 @@
         <!--current weather
   city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index-->
         <div class="display-3 weather-conditions">
-          <div class="card current-weather">
-            <p>current weather</p>
+          <div class="card current-weather" id="day0">
+            <p>Current Weather</p>
+          </div>
+          <!--five day forcast
+date, an icon representation of weather conditions, the temperature, the wind speed, and the humidity-->
+          <div class="display-3 five-day">
+            <div class="d-flex five-day-forecast">
+              <div class="card day" id="day1">one</div>
+              <div class="card day" id="day2">two</div>
+              <div class="card day" id="day3">three</div>
+              <div class="card day" id="day4">four</div>
+              <div class="card day" id="day5">five</div>
+            </div>
           </div>
         </div>
-        <!--five day forcast
-date, an icon representation of weather conditions, the temperature, the wind speed, and the humidity-->
       </div>
     </main>
 
