@@ -13,82 +13,70 @@ let today = moment().format("MM/DD/YYYY");
 // save to local storage
 // display last 5 cities in search-history
 
-let city;
-let curCity = [];
+//let city = "Tampa";
+//let curCity = [];
 
-let cityCoord;
-let lat = 34;
-let lon = -84;
+//let cityCoord;
+//let lat = 34;
+//let lon = -84;
 //let lat;
 //let lon;
 
-let queryURL;
+console.log(today);
+//getHistory();
 
-$(".search-btn").click(function () {
-  city = document.getElementById("city-picker").value;
-  console.log("city= " + city);
+//let queryURL;
 
-  // get coordinates for selected city
-  makeCityQuery();
-  getCityCoords();
-
-  // get weather for selected city
-  makeQueryUrl();
-  getCurrent();
-  getForecast();
-});
-
-function makeCityQuery() {
-  cityCoord =
+function makeCityQuery(city) {
+  cityQueryString =
     "https://api.geoapify.com/v1/geocode/search?text=" +
     city +
     "&apiKey=92450b90549f40a9970b46139ae2ed67";
-  console.log(cityCoord);
+  console.log("cityQueryString=" + cityQueryString);
+  return cityQueryString;
 }
 
-function getCityCoords() {
-  fetch(cityCoord)
+async function getCityCoords(cityQueryString) {
+  let res = await fetch(cityQueryString)
     .then((res) => {
       return res.json();
     })
     .then((loadedCity) => {
-      curCity = loadedCity;
+      let curCity = loadedCity;
       console.log(curCity);
-
-      loadLatLon();
+      return curCity;
     })
     .catch((err) => {
       console.error(err);
     });
 }
 
-console.log(today);
-//getHistory();
-
 var apiKey = "72055e427a01724fa3fd9ce3dd2c9a97"; // openweather api key
 let currentWeather = [];
 
-function loadLatLon() {
-  lat = 32;
-  lon = -81;
+function loadLatLon(curCity) {
+  let lat = 34,
+    lon = -84;
   /*
-  lat = curCity.features[0].bbox[1];
-  lon = curCity.features[0].bbox[0];
-  */
+  let lat = curCity.features[0].bbox[1],
+    lon = curCity.features[0].bbox[0];
+*/
+  console.log(lat, lon);
+
+  return [lat, lon];
 }
 
-function makeQueryUrl() {
-  console.log(curCity);
-
-  queryURL =
+function makeQueryUrl(coords) {
+  let queryURL =
     "https://api.openweathermap.org/data/3.0/onecall?lat=" +
-    lat +
+    coords[0] +
     "&lon=" +
-    lon +
+    coords[1] +
     "&appid=" +
     apiKey +
     "&units=imperial";
   console.log(queryURL);
+  return queryURL;
 }
 
 function getCurrent() {
@@ -97,8 +85,8 @@ function getCurrent() {
       return res.json();
     })
     .then((loadedWeather) => {
-      currentWeather = loadedWeather;
-      loadCurrent();
+      let currentWeather = loadedWeather;
+      loadCurrent(currentWeather);
     })
     /*city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index*/
     .catch((err) => {
@@ -106,7 +94,7 @@ function getCurrent() {
     });
 }
 
-function loadCurrent() {
+function loadCurrent(currentWeather) {
   //create elements when current weather is loaded
   console.log(currentWeather);
   localStorage.setItem("City", city);
@@ -168,3 +156,18 @@ function getHistory() {
     console.log(i);
   }
 }
+
+$(".search-btn").click(function () {
+  city = document.getElementById("city-picker").value;
+  console.log("city= " + city);
+
+  // get coordinates for selected city
+  makeCityQuery(city);
+  getCityCoords(cityQueryString);
+
+  // get weather for selected city
+  let coords = loadLatLon(curCity);
+  makeQueryUrl(coords);
+  getCurrent();
+  getForecast();
+});
