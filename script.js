@@ -13,22 +13,10 @@ let today = moment().format("MM/DD/YYYY");
 // save to local storage
 // display last 5 cities in search-history
 
-//let city = "Tampa";
-//let curCity = [];
-
-//let cityCoord;
-//let lat = 34;
-//let lon = -84;
-//let lat;
-//let lon;
-
 console.log(today);
-//getHistory();
-
-//let queryURL;
 
 function makeCityQuery(city) {
-  cityQueryString =
+  const cityQueryString =
     "https://api.geoapify.com/v1/geocode/search?text=" +
     city +
     "&apiKey=92450b90549f40a9970b46139ae2ed67";
@@ -49,18 +37,16 @@ async function getCityCoords(cityQueryString) {
     .catch((err) => {
       console.error(err);
     });
+  return res;
 }
 
 var apiKey = "72055e427a01724fa3fd9ce3dd2c9a97"; // openweather api key
 let currentWeather = [];
 
-function loadLatLon(curCity) {
-  let lat = 34,
-    lon = -84;
-  /*
-  let lat = curCity.features[0].bbox[1],
-    lon = curCity.features[0].bbox[0];
-*/
+function loadLatLon(cityCoords) {
+  let lat = cityCoords.features[0].bbox[1],
+    lon = cityCoords.features[0].bbox[0];
+
   console.log(lat, lon);
 
   return [lat, lon];
@@ -79,22 +65,22 @@ function makeQueryUrl(coords) {
   return queryURL;
 }
 
-function getCurrent() {
-  fetch(queryURL)
+function getCurrentDay(queryURL) {
+  const res = fetch(queryURL)
     .then((res) => {
       return res.json();
     })
     .then((loadedWeather) => {
-      let currentWeather = loadedWeather;
-      loadCurrent(currentWeather);
+      return loadedWeather;
     })
     /*city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index*/
     .catch((err) => {
       console.error(err);
     });
+  return res;
 }
 
-function loadCurrent(currentWeather) {
+function loadCurrentDay(currentWeather) {
   //create elements when current weather is loaded
   console.log(currentWeather);
   localStorage.setItem("City", city);
@@ -157,17 +143,19 @@ function getHistory() {
   }
 }
 
-$(".search-btn").click(function () {
+$(".search-btn").click(async function () {
   city = document.getElementById("city-picker").value;
   console.log("city= " + city);
 
   // get coordinates for selected city
-  makeCityQuery(city);
-  getCityCoords(cityQueryString);
+  const cityQuery = makeCityQuery(city);
+
+  const cityCoords = await getCityCoords(cityQuery);
 
   // get weather for selected city
-  let coords = loadLatLon(curCity);
-  makeQueryUrl(coords);
-  getCurrent();
+  const coords = loadLatLon(cityCoords);
+  const queryURL = makeQueryUrl(coords);
+  const currentDay = await getCurrentDay(queryURL);
+  loadCurrentDay(currentDay);
   getForecast();
 });
