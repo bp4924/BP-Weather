@@ -1,7 +1,7 @@
 let hist1 = document.createElement("button");
 
 let currentWxCity = document.createElement("div");
-let wxIconImg = document.createElement("img");
+
 let currentTemp = document.createElement("div");
 let currentHumidity = document.createElement("div");
 let currentWind = document.createElement("div");
@@ -82,7 +82,6 @@ function getWeather(queryURL) {
 
 function loadCurrentDay(weather) {
   //create elements when current weather is loaded
-  console.log(weather);
   localStorage.setItem("City", city);
   hist1.classList.add("btn", "search-btn", "hist1");
   hist1.innerHTML = city;
@@ -102,8 +101,7 @@ function loadCurrentDay(weather) {
   // ----------------
   //generate & place icon
   let wxIconCode = weather.current.weather[0].icon;
-  console.log(wxIconCode);
-  getWxIcon(wxIconCode);
+  const wxIconImg = getWxIcon(wxIconCode);
   $(".current-weather").append(wxIconImg);
   //
   // place remainder of data
@@ -148,12 +146,12 @@ function loadCurrentDay(weather) {
 
 function loadForecast(weather) {
   for (var i = 0; i <= 4; i++) {
-    index = i + 1;
+    const index = i + 1;
     let forecastIdString = "#day" + index;
     let forecastDay = moment().add(index, "days").format("MM/DD/YYYY");
-    console.log(forecastDay);
+    // console.log(forecastDay);
 
-    let forecastCardItem = document.createElement("div");
+    const forecastCardItem = document.createElement("div");
     forecastCardItem.classList.add("current-wx-city");
     forecastCardItem.setAttribute(
       "style",
@@ -162,46 +160,43 @@ function loadForecast(weather) {
     forecastCardItem.innerHTML = forecastDay;
     $(forecastIdString).append(forecastCardItem);
 
-    /*
     //    let forecastWxItemImg = document.createElement("img");
     let forecastWxIconCode = weather.daily[index].weather[0].icon;
-    getWxIcon(forecastWxIconCode);
-    console.log(wxIconImg);
-    let forecastWxIconImg = document.createElement("img");
-    forecastCardItem.append(wxIconImg);
+    // alert(forecastWxIconCode);
+    const wxImg = getWxIcon(forecastWxIconCode);
+    forecastCardItem.append(wxImg);
 
     
-    $(forecastWxItemImg).append(wxIconImg);
-    console.log(forecastWxIconCode);
-*/
+    // $(forecastWxItemImg).append(wxIconImg);
+    // console.log(forecastWxIconCode);
 
-    forecastCardItem = document.createElement("div");
+    const temperatureDiv = document.createElement("div");
     let forecastTemp = Math.floor(weather.daily[index].temp.day);
-    forecastCardItem.innerHTML = "Temperature: " + forecastTemp + "°";
-    forecastCardItem.setAttribute(
+    temperatureDiv.innerHTML = "Temperature: " + forecastTemp + "°";
+    temperatureDiv.setAttribute(
       "style",
       "font-weight: 700; font-style: font-size: 1.25rem"
     );
-    $(forecastIdString).append(forecastCardItem);
+    $(forecastIdString).append(temperatureDiv);
 
     // wind speed
-    forecastCardItem = document.createElement("div");
-    let forecastWindDir = weather.daily[index].wind_deg;
-    let forecastWindSpd = Math.floor(weather.daily[index].wind_speed);
-    forecastWind =
+    const windDiv = document.createElement("div");
+    const forecastWindDir = weather.daily[index].wind_deg;
+    const forecastWindSpd = Math.floor(weather.daily[index].wind_speed);
+    const forecastWind =
       "Wind from " + forecastWindDir + "° at " + forecastWindSpd + " mph";
-    forecastCardItem.innerHTML = forecastWind;
-    $(forecastIdString).append(forecastCardItem);
+    windDiv.innerHTML = forecastWind;
+    $(forecastIdString).append(windDiv);
 
     // humidity
-    forecastCardItem = document.createElement("div");
+    const humidityDiv = document.createElement("div");
     let forecastHumidity = weather.daily[index].humidity;
-    forecastCardItem.innerHTML = "Humidity: " + forecastHumidity + "%";
-    $(forecastIdString).append(forecastCardItem);
+    humidityDiv.innerHTML = "Humidity: " + forecastHumidity + "%";
+    $(forecastIdString).append(humidityDiv);
 
     //    console.log(wxIconCode);
     //    console.log(wxIconImg);
-    console.log(forecastIdString);
+    // console.log(forecastIdString);
   }
 }
 
@@ -212,8 +207,9 @@ function getHistory() {
 }
 
 function getWxIcon(wxIconCode) {
-  let wxIcon = `https://openweathermap.org/img/wn/${wxIconCode}.png`;
-  wxIconImg.src = wxIcon;
+  let wxIconImg = document.createElement("img");
+  let wxIconSrc = `https://openweathermap.org/img/wn/${wxIconCode}.png`;
+  wxIconImg.src = wxIconSrc;
   wxIconImg.setAttribute("style", "height: 4rem");
   return wxIconImg;
 }
