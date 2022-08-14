@@ -140,6 +140,7 @@ function loadForecast(weather) {
     forecastCardItem.innerHTML = forecastTemp + "°";
     $(forecastIdString).append(forecastCardItem);
 
+    /*
     //    let forecastWxItemImg = document.createElement("img");
     let forecastWxIconCode = weather.daily[index].weather[0].icon;
     getWxIcon(forecastWxIconCode);
@@ -147,7 +148,7 @@ function loadForecast(weather) {
     let forecastWxIconImg = document.createElement("img");
     forecastCardItem.append(wxIconImg);
 
-    /*
+    
     $(forecastWxItemImg).append(wxIconImg);
     console.log(forecastWxIconCode);
 */
