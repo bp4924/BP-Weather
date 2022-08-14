@@ -91,8 +91,12 @@ function loadCurrentDay(weather) {
   //
   // place city & date on page
   let cityString = city + " (" + today + ")";
-  currentWxCity.classList.add("current-wx");
+  currentWxCity.classList.add("current-wx-city");
   currentWxCity.innerHTML = cityString;
+  currentWxCity.setAttribute(
+    "style",
+    "font-weight: 700; font-style: italic; font-size: 2.5rem"
+  );
   $(".current-weather").append(currentWxCity);
 
   // ----------------
@@ -136,14 +140,16 @@ function loadForecast(weather) {
     forecastCardItem.innerHTML = forecastTemp + "°";
     $(forecastIdString).append(forecastCardItem);
 
-    /*
-    forecastCardItem = document.createElement("div");
+    //    let forecastWxItemImg = document.createElement("img");
     let forecastWxIconCode = weather.daily[index].weather[0].icon;
-    let wxIcon = `https://openweathermap.org/img/wn/${forecastWxIconCode}.png`;
-    wxIconImg.src = wxIcon;
-    wxIconImg.setAttribute("style", "height: 2rem");
-        //    getWxIcon(forecastWxIconCode);
+    getWxIcon(forecastWxIconCode);
+    console.log(wxIconImg);
+    let forecastWxIconImg = document.createElement("img");
     forecastCardItem.append(wxIconImg);
+
+    /*
+    $(forecastWxItemImg).append(wxIconImg);
+    console.log(forecastWxIconCode);
 */
     // wind speed
     forecastCardItem = document.createElement("div");
@@ -175,7 +181,7 @@ function getHistory() {
 function getWxIcon(wxIconCode) {
   let wxIcon = `https://openweathermap.org/img/wn/${wxIconCode}.png`;
   wxIconImg.src = wxIcon;
-  wxIconImg.setAttribute("style", "height: 2rem");
+  wxIconImg.setAttribute("style", "height: 4rem");
   return wxIconImg;
 }
 
