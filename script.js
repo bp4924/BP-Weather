@@ -1,7 +1,7 @@
 let hist1 = document.createElement("button");
 
 let currentWxCity = document.createElement("div");
-let wxIconImg = document.createElement("img");
+
 let currentTemp = document.createElement("div");
 let currentHumidity = document.createElement("div");
 let currentWind = document.createElement("div");
@@ -65,7 +65,7 @@ function makeQueryUrl(coords) {
   return queryURL;
 }
 
-function getCurrentDay(queryURL) {
+function getWeather(queryURL) {
   const res = fetch(queryURL)
     .then((res) => {
       return res.json();
@@ -80,67 +80,138 @@ function getCurrentDay(queryURL) {
   return res;
 }
 
-function loadCurrentDay(currentWeather) {
+function loadCurrentDay(weather) {
   //create elements when current weather is loaded
-  console.log(currentWeather);
   localStorage.setItem("City", city);
   hist1.classList.add("btn", "search-btn", "hist1");
   hist1.innerHTML = city;
   $(".city-search").append(hist1); // place button on page for search history
+
   //
   // place city & date on page
   let cityString = city + " (" + today + ")";
-  currentWxCity.classList.add("current-wx");
+  currentWxCity.classList.add("current-wx-city");
   currentWxCity.innerHTML = cityString;
+  currentWxCity.setAttribute(
+    "style",
+    "font-weight: 700; font-style: italic; font-size: 2.5rem"
+  );
   $(".current-weather").append(currentWxCity);
 
   // ----------------
   //generate & place icon
-  let wxIconCode = currentWeather.current.weather[0].icon;
-  console.log(wxIconCode);
-  let wxIcon = `http://openweathermap.org/img/wn/${wxIconCode}.png`;
-  wxIconImg.src = wxIcon;
-  wxIconImg.setAttribute("style", "height: 2rem");
+  let wxIconCode = weather.current.weather[0].icon;
+  const wxIconImg = getWxIcon(wxIconCode);
   $(".current-weather").append(wxIconImg);
-  console.log(wxIcon);
   //
   // place remainder of data
-  currentTemp.innerHTML = "Temperature: " + currentWeather.current.temp + "°";
+  currentTemp.innerHTML =
+    "Temperature: " + Math.floor(weather.current.temp) + "°";
+  currentTemp.setAttribute(
+    "style",
+    "font-weight: 700; font-style: italic; font-size: 1.5rem"
+  );
   $(".current-weather").append(currentTemp);
+
   currentHumidity.innerHTML =
-    "Humidity: " + currentWeather.current.humidity + "%";
+    "Humidity: " + Math.floor(weather.current.humidity) + "%";
   $(".current-weather").append(currentHumidity);
   currentWind.innerHTML =
     "Wind from " +
-    currentWeather.current.wind_deg +
-    " degrees at " +
-    currentWeather.current.wind_speed +
+    weather.current.wind_deg +
+    "° at " +
+    Math.floor(weather.current.wind_speed) +
     " mph";
   $(".current-weather").append(currentWind);
 
-  currentUVindex.innerHTML = "UV index: " + currentWeather.current.uvi;
-  $(".current-weather").append(currentUVindex);
+  let uvIndex = weather.current.uvi;
+  currentUVindex.innerHTML = "UV index: " + Math.floor(uvIndex);
+  currentUVindex.setAttribute("style", "margin: 1rem");
+  if (uvIndex < 4) {
+    currentUVindex.setAttribute(
+      "style",
+      "background-color: darkgrey; color: white"
+    );
+  } else if (uvIndex > 8) {
+    currentUVindex.setAttribute("style", "background-color: red; color: white");
+  } else {
+    currentUVindex.setAttribute(
+      "style",
+      "background-color: green; color: white"
+    );
+  }
 
-  console.log("Temperature " + currentWeather.current.temp + "°");
-  console.log("Humidity " + currentWeather.current.humidity + "%");
-  console.log(
-    "Wind from " +
-      currentWeather.current.wind_deg +
-      " degrees at " +
-      currentWeather.current.wind_speed +
-      " mph"
-  );
-  console.log("UV index: " + currentWeather.current.uvi);
+  $(".current-weather").append(currentUVindex);
 }
 
-function getForecast() {
-  console.log("forecast");
+function loadForecast(weather) {
+  for (var i = 0; i <= 4; i++) {
+    const index = i + 1;
+    let forecastIdString = "#day" + index;
+    let forecastDay = moment().add(index, "days").format("MM/DD/YYYY");
+    // console.log(forecastDay);
+
+    const forecastCardItem = document.createElement("div");
+    forecastCardItem.classList.add("current-wx-city");
+    forecastCardItem.setAttribute(
+      "style",
+      "font-weight: 700; font-style: italic; font-size: 1.5rem"
+    );
+    forecastCardItem.innerHTML = forecastDay;
+    $(forecastIdString).append(forecastCardItem);
+
+    //    let forecastWxItemImg = document.createElement("img");
+    let forecastWxIconCode = weather.daily[index].weather[0].icon;
+    // alert(forecastWxIconCode);
+    const wxImg = getWxIcon(forecastWxIconCode);
+    forecastCardItem.append(wxImg);
+
+    
+    // $(forecastWxItemImg).append(wxIconImg);
+    // console.log(forecastWxIconCode);
+
+    const temperatureDiv = document.createElement("div");
+    let forecastTemp = Math.floor(weather.daily[index].temp.day);
+    temperatureDiv.innerHTML = "Temperature: " + forecastTemp + "°";
+    temperatureDiv.setAttribute(
+      "style",
+      "font-weight: 700; font-style: font-size: 1.25rem"
+    );
+    $(forecastIdString).append(temperatureDiv);
+
+    // wind speed
+    const windDiv = document.createElement("div");
+    const forecastWindDir = weather.daily[index].wind_deg;
+    const forecastWindSpd = Math.floor(weather.daily[index].wind_speed);
+    const forecastWind =
+      "Wind from " + forecastWindDir + "° at " + forecastWindSpd + " mph";
+    windDiv.innerHTML = forecastWind;
+    $(forecastIdString).append(windDiv);
+
+    // humidity
+    const humidityDiv = document.createElement("div");
+    let forecastHumidity = weather.daily[index].humidity;
+    humidityDiv.innerHTML = "Humidity: " + forecastHumidity + "%";
+    $(forecastIdString).append(humidityDiv);
+
+    //    console.log(wxIconCode);
+    //    console.log(wxIconImg);
+    // console.log(forecastIdString);
+  }
 }
 
 function getHistory() {
   for (var i = 0; i <= 4; i++) {
     console.log(i);
   }
+}
+
+function getWxIcon(wxIconCode) {
+  let wxIconImg = document.createElement("img");
+  let wxIconSrc = `https://openweathermap.org/img/wn/${wxIconCode}.png`;
+  wxIconImg.src = wxIconSrc;
+  wxIconImg.setAttribute("style", "height: 4rem");
+  return wxIconImg;
 }
 
 $(".search-btn").click(async function () {
@@ -155,7 +226,7 @@ $(".search-btn").click(async function () {
   // get weather for selected city
   const coords = loadLatLon(cityCoords);
   const queryURL = makeQueryUrl(coords);
-  const currentDay = await getCurrentDay(queryURL);
-  loadCurrentDay(currentDay);
-  getForecast();
+  const weather = await getWeather(queryURL);
+  loadCurrentDay(weather);
+  loadForecast(weather);
 });

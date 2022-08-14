@@ -18,7 +18,7 @@ body {
 }
 
 h1 {
-  font-weight: bolder;
+  font-weight: 700;
 }
 
 p {
@@ -72,6 +72,10 @@ p {
 .current-weather {
   width: 100%;
   height: 100%;
+}
+
+.current-weather p {
+  font-size: 2.5rem;
 }
 
 .card {
