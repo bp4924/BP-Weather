@@ -107,20 +107,42 @@ function loadCurrentDay(weather) {
   $(".current-weather").append(wxIconImg);
   //
   // place remainder of data
-  currentTemp.innerHTML = "Temperature: " + weather.current.temp + "°";
+  currentTemp.innerHTML =
+    "Temperature: " + Math.floor(weather.current.temp) + "°";
+  currentTemp.setAttribute(
+    "style",
+    "font-weight: 700; font-style: italic; font-size: 1.5rem"
+  );
   $(".current-weather").append(currentTemp);
 
-  currentHumidity.innerHTML = "Humidity: " + weather.current.humidity + "%";
+  currentHumidity.innerHTML =
+    "Humidity: " + Math.floor(weather.current.humidity) + "%";
   $(".current-weather").append(currentHumidity);
   currentWind.innerHTML =
     "Wind from " +
     weather.current.wind_deg +
     "° at " +
-    weather.current.wind_speed +
+    Math.floor(weather.current.wind_speed) +
     " mph";
   $(".current-weather").append(currentWind);
 
-  currentUVindex.innerHTML = "UV index: " + weather.current.uvi;
+  let uvIndex = weather.current.uvi;
+  currentUVindex.innerHTML = "UV index: " + Math.floor(uvIndex);
+  currentUVindex.setAttribute("style", "margin: 1rem");
+  if (uvIndex < 4) {
+    currentUVindex.setAttribute(
+      "style",
+      "background-color: darkgrey; color: white"
+    );
+  } else if (uvIndex > 8) {
+    currentUVindex.setAttribute("style", "background-color: red; color: white");
+  } else {
+    currentUVindex.setAttribute(
+      "style",
+      "background-color: green; color: white"
+    );
+  }
+
   $(".current-weather").append(currentUVindex);
 }
 
@@ -132,12 +154,12 @@ function loadForecast(weather) {
     console.log(forecastDay);
 
     let forecastCardItem = document.createElement("div");
+    forecastCardItem.classList.add("current-wx-city");
+    forecastCardItem.setAttribute(
+      "style",
+      "font-weight: 700; font-style: italic; font-size: 1.5rem"
+    );
     forecastCardItem.innerHTML = forecastDay;
-    $(forecastIdString).append(forecastCardItem);
-
-    forecastCardItem = document.createElement("div");
-    let forecastTemp = weather.daily[index].temp.day;
-    forecastCardItem.innerHTML = forecastTemp + "°";
     $(forecastIdString).append(forecastCardItem);
 
     /*
@@ -152,10 +174,20 @@ function loadForecast(weather) {
     $(forecastWxItemImg).append(wxIconImg);
     console.log(forecastWxIconCode);
 */
+
+    forecastCardItem = document.createElement("div");
+    let forecastTemp = Math.floor(weather.daily[index].temp.day);
+    forecastCardItem.innerHTML = "Temperature: " + forecastTemp + "°";
+    forecastCardItem.setAttribute(
+      "style",
+      "font-weight: 700; font-style: font-size: 1.25rem"
+    );
+    $(forecastIdString).append(forecastCardItem);
+
     // wind speed
     forecastCardItem = document.createElement("div");
     let forecastWindDir = weather.daily[index].wind_deg;
-    let forecastWindSpd = weather.daily[index].wind_speed;
+    let forecastWindSpd = Math.floor(weather.daily[index].wind_speed);
     forecastWind =
       "Wind from " + forecastWindDir + "° at " + forecastWindSpd + " mph";
     forecastCardItem.innerHTML = forecastWind;
