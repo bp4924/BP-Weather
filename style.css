@@ -2,7 +2,7 @@
   --dark: rgb(20, 9, 74);
   --light: rgb(180, 177, 247);
   --darker: #000000;
-  --lighter: #fff;
+  --lighter: rgb(219, 237, 253);
   font-size: 62.5%;
 }
 
@@ -82,6 +82,7 @@ p {
   align-items: center;
   font-size: 1.25rem;
   font-weight: 400;
+  background-color: var(--lighter);
 }
 
 .five-day {

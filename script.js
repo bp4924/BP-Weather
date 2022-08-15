@@ -1,7 +1,6 @@
 let hist1 = document.createElement("button");
 
 let currentWxCity = document.createElement("div");
-
 let currentTemp = document.createElement("div");
 let currentHumidity = document.createElement("div");
 let currentWind = document.createElement("div");
@@ -12,8 +11,7 @@ let today = moment().format("MM/DD/YYYY");
 // TODO: ------
 // save to local storage
 // display last 5 cities in search-history
-
-console.log(today);
+// clear previous results before reload
 
 function makeCityQuery(city) {
   const cityQueryString =
@@ -31,7 +29,6 @@ async function getCityCoords(cityQueryString) {
     })
     .then((loadedCity) => {
       let curCity = loadedCity;
-      console.log(curCity);
       return curCity;
     })
     .catch((err) => {
@@ -46,9 +43,6 @@ let currentWeather = [];
 function loadLatLon(cityCoords) {
   let lat = cityCoords.features[0].bbox[1],
     lon = cityCoords.features[0].bbox[0];
-
-  console.log(lat, lon);
-
   return [lat, lon];
 }
 
@@ -61,7 +55,6 @@ function makeQueryUrl(coords) {
     "&appid=" +
     apiKey +
     "&units=imperial";
-  console.log(queryURL);
   return queryURL;
 }
 
@@ -73,7 +66,6 @@ function getWeather(queryURL) {
     .then((loadedWeather) => {
       return loadedWeather;
     })
-    /*city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index*/
     .catch((err) => {
       console.error(err);
     });
@@ -102,9 +94,10 @@ function loadCurrentDay(weather) {
   //generate & place icon
   let wxIconCode = weather.current.weather[0].icon;
   const wxIconImg = getWxIcon(wxIconCode);
-  $(".current-weather").append(wxIconImg);
-  //
+  currentWxCity.append(wxIconImg);
+
   // place remainder of data
+  // Temperature
   currentTemp.innerHTML =
     "Temperature: " + Math.floor(weather.current.temp) + "°";
   currentTemp.setAttribute(
@@ -113,6 +106,7 @@ function loadCurrentDay(weather) {
   );
   $(".current-weather").append(currentTemp);
 
+  // Humidity
   currentHumidity.innerHTML =
     "Humidity: " + Math.floor(weather.current.humidity) + "%";
   $(".current-weather").append(currentHumidity);
@@ -124,6 +118,7 @@ function loadCurrentDay(weather) {
     " mph";
   $(".current-weather").append(currentWind);
 
+  //UV w/colors
   let uvIndex = weather.current.uvi;
   currentUVindex.innerHTML = "UV index: " + Math.floor(uvIndex);
   currentUVindex.setAttribute("style", "margin: 1rem");
@@ -144,15 +139,15 @@ function loadCurrentDay(weather) {
   $(".current-weather").append(currentUVindex);
 }
 
+// load forcast items
 function loadForecast(weather) {
   for (var i = 0; i <= 4; i++) {
     const index = i + 1;
     let forecastIdString = "#day" + index;
     let forecastDay = moment().add(index, "days").format("MM/DD/YYYY");
-    // console.log(forecastDay);
 
     const forecastCardItem = document.createElement("div");
-    forecastCardItem.classList.add("current-wx-city");
+    forecastCardItem.classList.add("forecast-wx-city");
     forecastCardItem.setAttribute(
       "style",
       "font-weight: 700; font-style: italic; font-size: 1.5rem"
@@ -160,16 +155,12 @@ function loadForecast(weather) {
     forecastCardItem.innerHTML = forecastDay;
     $(forecastIdString).append(forecastCardItem);
 
-    //    let forecastWxItemImg = document.createElement("img");
+    // Forecast icon
     let forecastWxIconCode = weather.daily[index].weather[0].icon;
-    // alert(forecastWxIconCode);
     const wxImg = getWxIcon(forecastWxIconCode);
     forecastCardItem.append(wxImg);
 
-    
-    // $(forecastWxItemImg).append(wxIconImg);
-    // console.log(forecastWxIconCode);
-
+    // forecast temperature
     const temperatureDiv = document.createElement("div");
     let forecastTemp = Math.floor(weather.daily[index].temp.day);
     temperatureDiv.innerHTML = "Temperature: " + forecastTemp + "°";
@@ -179,7 +170,7 @@ function loadForecast(weather) {
     );
     $(forecastIdString).append(temperatureDiv);
 
-    // wind speed
+    // forecast wind speed and direction
     const windDiv = document.createElement("div");
     const forecastWindDir = weather.daily[index].wind_deg;
     const forecastWindSpd = Math.floor(weather.daily[index].wind_speed);
@@ -188,15 +179,11 @@ function loadForecast(weather) {
     windDiv.innerHTML = forecastWind;
     $(forecastIdString).append(windDiv);
 
-    // humidity
+    // forecast humidity
     const humidityDiv = document.createElement("div");
     let forecastHumidity = weather.daily[index].humidity;
     humidityDiv.innerHTML = "Humidity: " + forecastHumidity + "%";
     $(forecastIdString).append(humidityDiv);
-
-    //    console.log(wxIconCode);
-    //    console.log(wxIconImg);
-    // console.log(forecastIdString);
   }
 }
 
@@ -206,6 +193,7 @@ function getHistory() {
   }
 }
 
+// get weather icon from icon code
 function getWxIcon(wxIconCode) {
   let wxIconImg = document.createElement("img");
   let wxIconSrc = `https://openweathermap.org/img/wn/${wxIconCode}.png`;
@@ -214,19 +202,23 @@ function getWxIcon(wxIconCode) {
   return wxIconImg;
 }
 
+// search
 $(".search-btn").click(async function () {
+  //remove previous results
+  $(".day").empty();
+
   city = document.getElementById("city-picker").value;
-  console.log("city= " + city);
 
   // get coordinates for selected city
   const cityQuery = makeCityQuery(city);
-
   const cityCoords = await getCityCoords(cityQuery);
 
   // get weather for selected city
   const coords = loadLatLon(cityCoords);
   const queryURL = makeQueryUrl(coords);
   const weather = await getWeather(queryURL);
+
+  //  load results
   loadCurrentDay(weather);
   loadForecast(weather);
 });
