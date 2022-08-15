@@ -74,10 +74,6 @@ function getWeather(queryURL) {
 
 function loadCurrentDay(weather) {
   //create elements when current weather is loaded
-  localStorage.setItem("City", city);
-  hist1.classList.add("btn", "search-btn", "hist1");
-  hist1.innerHTML = city;
-  $(".city-search").append(hist1); // place button on page for search history
 
   //
   // place city & date on page
@@ -122,17 +118,20 @@ function loadCurrentDay(weather) {
   let uvIndex = weather.current.uvi;
   currentUVindex.innerHTML = "UV index: " + Math.floor(uvIndex);
   currentUVindex.setAttribute("style", "margin: 1rem");
-  if (uvIndex < 4) {
+  if (uvIndex < 6) {
     currentUVindex.setAttribute(
       "style",
-      "background-color: darkgrey; color: white"
+      "background-color: green; color: white; font-weight:500"
     );
-  } else if (uvIndex > 8) {
-    currentUVindex.setAttribute("style", "background-color: red; color: white");
+  } else if (uvIndex > 9) {
+    currentUVindex.setAttribute(
+      "style",
+      "background-color: red; color: white; font-weight:500"
+    );
   } else {
     currentUVindex.setAttribute(
       "style",
-      "background-color: green; color: white"
+      "background-color: yellow; color: black; font-weight:500"
     );
   }
 
@@ -187,12 +186,6 @@ function loadForecast(weather) {
   }
 }
 
-function getHistory() {
-  for (var i = 0; i <= 4; i++) {
-    console.log(i);
-  }
-}
-
 // get weather icon from icon code
 function getWxIcon(wxIconCode) {
   let wxIconImg = document.createElement("img");
@@ -202,11 +195,37 @@ function getWxIcon(wxIconCode) {
   return wxIconImg;
 }
 
+function saveSearch(city) {
+  const searchHistory = JSON.parse(localStorage.getItem("search")) || [];
+  const maxItems = 3;
+  console.log(searchHistory.length);
+
+  let counter = searchHistory.length;
+  if (counter == maxItems) {
+    counter = 0;
+  }
+
+  const searchItem = "search-" + counter;
+  console.log(searchItem);
+
+  const search = {
+    search: searchItem,
+    name: city,
+  };
+
+  searchHistory.splice(maxItems);
+  searchHistory.push(search);
+  console.log(search);
+
+  localStorage.setItem("search", JSON.stringify(searchHistory));
+  console.log("new " + searchHistory.length);
+  //  window.location.assign("highscores.html");
+}
+
 // search
 $(".search-btn").click(async function () {
   //remove previous results
   $(".day").empty();
-
   city = document.getElementById("city-picker").value;
 
   // get coordinates for selected city
@@ -221,4 +240,5 @@ $(".search-btn").click(async function () {
   //  load results
   loadCurrentDay(weather);
   loadForecast(weather);
+  saveSearch(city);
 });

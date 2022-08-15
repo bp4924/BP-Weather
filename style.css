@@ -65,7 +65,7 @@ p {
 .weather-conditions {
   width: 75%;
   margin-top: 1.5rem;
-  height: 15rem;
+  height: 12rem;
   background-color: var(--lighter);
 }
 
@@ -86,7 +86,7 @@ p {
 }
 
 .five-day {
-  height: 15rem;
+  min-height: 20rem;
 }
 
 .day {
