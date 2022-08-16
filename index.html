@@ -38,18 +38,16 @@
               placeholder="Choose a city"
             />
             <br />
-            <button class="btn search-btn">Search</button>
-            <ul class="search-history">
+            <button class="btn search-btn" id="search-button">Search</button>
+            <div class="search-history">
               <!--last 5 searches (local storage)-->
-            </ul>
+            </div>
           </div>
         </div>
-        <!--current weather
-  city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index-->
         <div class="display-3 weather-conditions">
+          <!--current weather-->
           <div class="card current-weather" id="day0"></div>
-          <!--five day forcast
-date, an icon representation of weather conditions, the temperature, the wind speed, and the humidity-->
+          <!--five day forcast-->
           <div class="display-3 five-day">
             <div class="d-flex five-day-forecast">
               <div class="card day" id="day1"></div>
@@ -62,7 +60,6 @@ date, an icon representation of weather conditions, the temperature, the wind sp
         </div>
       </div>
     </main>
-    <!--    <script src="https://cdn.tailwindcss.com"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="script.js"></script>

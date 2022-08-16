@@ -1,7 +1,4 @@
-let hist1 = document.createElement("button");
-
 let currentWxCity = document.createElement("div");
-
 let currentTemp = document.createElement("div");
 let currentHumidity = document.createElement("div");
 let currentWind = document.createElement("div");
@@ -12,8 +9,8 @@ let today = moment().format("MM/DD/YYYY");
 // TODO: ------
 // save to local storage
 // display last 5 cities in search-history
-
-console.log(today);
+// clear previous results before reload
+displaySearchHistory();
 
 function makeCityQuery(city) {
   const cityQueryString =
@@ -31,7 +28,6 @@ async function getCityCoords(cityQueryString) {
     })
     .then((loadedCity) => {
       let curCity = loadedCity;
-      console.log(curCity);
       return curCity;
     })
     .catch((err) => {
@@ -46,9 +42,6 @@ let currentWeather = [];
 function loadLatLon(cityCoords) {
   let lat = cityCoords.features[0].bbox[1],
     lon = cityCoords.features[0].bbox[0];
-
-  console.log(lat, lon);
-
   return [lat, lon];
 }
 
@@ -61,7 +54,6 @@ function makeQueryUrl(coords) {
     "&appid=" +
     apiKey +
     "&units=imperial";
-  console.log(queryURL);
   return queryURL;
 }
 
@@ -73,7 +65,6 @@ function getWeather(queryURL) {
     .then((loadedWeather) => {
       return loadedWeather;
     })
-    /*city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index*/
     .catch((err) => {
       console.error(err);
     });
@@ -82,10 +73,6 @@ function getWeather(queryURL) {
 
 function loadCurrentDay(weather) {
   //create elements when current weather is loaded
-  localStorage.setItem("City", city);
-  hist1.classList.add("btn", "search-btn", "hist1");
-  hist1.innerHTML = city;
-  $(".city-search").append(hist1); // place button on page for search history
 
   //
   // place city & date on page
@@ -102,9 +89,10 @@ function loadCurrentDay(weather) {
   //generate & place icon
   let wxIconCode = weather.current.weather[0].icon;
   const wxIconImg = getWxIcon(wxIconCode);
-  $(".current-weather").append(wxIconImg);
-  //
+  currentWxCity.append(wxIconImg);
+
   // place remainder of data
+  // Temperature
   currentTemp.innerHTML =
     "Temperature: " + Math.floor(weather.current.temp) + "°";
   currentTemp.setAttribute(
@@ -113,9 +101,12 @@ function loadCurrentDay(weather) {
   );
   $(".current-weather").append(currentTemp);
 
+  // Humidity
   currentHumidity.innerHTML =
     "Humidity: " + Math.floor(weather.current.humidity) + "%";
   $(".current-weather").append(currentHumidity);
+
+  // Wind
   currentWind.innerHTML =
     "Wind from " +
     weather.current.wind_deg +
@@ -124,35 +115,39 @@ function loadCurrentDay(weather) {
     " mph";
   $(".current-weather").append(currentWind);
 
+  //UV w/colors
   let uvIndex = weather.current.uvi;
   currentUVindex.innerHTML = "UV index: " + Math.floor(uvIndex);
   currentUVindex.setAttribute("style", "margin: 1rem");
-  if (uvIndex < 4) {
+  if (uvIndex < 6) {
     currentUVindex.setAttribute(
       "style",
-      "background-color: darkgrey; color: white"
+      "background-color: green; color: white; font-weight:500"
     );
-  } else if (uvIndex > 8) {
-    currentUVindex.setAttribute("style", "background-color: red; color: white");
+  } else if (uvIndex > 9) {
+    currentUVindex.setAttribute(
+      "style",
+      "background-color: red; color: white; font-weight:500"
+    );
   } else {
     currentUVindex.setAttribute(
       "style",
-      "background-color: green; color: white"
+      "background-color: yellow; color: black; font-weight:500"
     );
   }
 
   $(".current-weather").append(currentUVindex);
 }
 
+// load forcast items
 function loadForecast(weather) {
   for (var i = 0; i <= 4; i++) {
     const index = i + 1;
     let forecastIdString = "#day" + index;
     let forecastDay = moment().add(index, "days").format("MM/DD/YYYY");
-    // console.log(forecastDay);
 
     const forecastCardItem = document.createElement("div");
-    forecastCardItem.classList.add("current-wx-city");
+    forecastCardItem.classList.add("forecast-wx-city");
     forecastCardItem.setAttribute(
       "style",
       "font-weight: 700; font-style: italic; font-size: 1.5rem"
@@ -160,16 +155,12 @@ function loadForecast(weather) {
     forecastCardItem.innerHTML = forecastDay;
     $(forecastIdString).append(forecastCardItem);
 
-    //    let forecastWxItemImg = document.createElement("img");
+    // Forecast icon
     let forecastWxIconCode = weather.daily[index].weather[0].icon;
-    // alert(forecastWxIconCode);
     const wxImg = getWxIcon(forecastWxIconCode);
     forecastCardItem.append(wxImg);
 
-    
-    // $(forecastWxItemImg).append(wxIconImg);
-    // console.log(forecastWxIconCode);
-
+    // forecast temperature
     const temperatureDiv = document.createElement("div");
     let forecastTemp = Math.floor(weather.daily[index].temp.day);
     temperatureDiv.innerHTML = "Temperature: " + forecastTemp + "°";
@@ -179,7 +170,7 @@ function loadForecast(weather) {
     );
     $(forecastIdString).append(temperatureDiv);
 
-    // wind speed
+    // forecast wind speed and direction
     const windDiv = document.createElement("div");
     const forecastWindDir = weather.daily[index].wind_deg;
     const forecastWindSpd = Math.floor(weather.daily[index].wind_speed);
@@ -188,24 +179,15 @@ function loadForecast(weather) {
     windDiv.innerHTML = forecastWind;
     $(forecastIdString).append(windDiv);
 
-    // humidity
+    // forecast humidity
     const humidityDiv = document.createElement("div");
     let forecastHumidity = weather.daily[index].humidity;
     humidityDiv.innerHTML = "Humidity: " + forecastHumidity + "%";
     $(forecastIdString).append(humidityDiv);
-
-    //    console.log(wxIconCode);
-    //    console.log(wxIconImg);
-    // console.log(forecastIdString);
   }
 }
 
-function getHistory() {
-  for (var i = 0; i <= 4; i++) {
-    console.log(i);
-  }
-}
-
+// get weather icon from icon code
 function getWxIcon(wxIconCode) {
   let wxIconImg = document.createElement("img");
   let wxIconSrc = `https://openweathermap.org/img/wn/${wxIconCode}.png`;
@@ -214,19 +196,74 @@ function getWxIcon(wxIconCode) {
   return wxIconImg;
 }
 
+function saveSearch(city) {
+  // check search history
+  const searchHistory = JSON.parse(localStorage.getItem("searches")) || [];
+  const maxItems = 5;
+
+  let counter = searchHistory.length;
+  if (counter >= maxItems) {
+    counter = 0;
+    searchHistory.splice(0, 1);
+    counter = searchHistory.length;
+  }
+
+  //  const searchItem = "search";
+
+  const search = {
+    search: "City",
+    name: city,
+  };
+
+  searchHistory.push(search);
+
+  localStorage.setItem("searches", JSON.stringify(searchHistory));
+
+  displaySearchHistory();
+}
+
+function displaySearchHistory() {
+  $(".search-history").empty();
+  const searchHistory = JSON.parse(localStorage.getItem("searches")) || [];
+
+  const counter = searchHistory.length;
+
+  for (var i = 0; i < counter; i++) {
+    let histBtn = document.createElement("button");
+    histBtn.innerHTML = searchHistory[i].name;
+    histBtn.classList.add("search-btn");
+    histBtn.classList.add("searchHistory-btn");
+    $(".search-history").append(histBtn);
+  }
+}
+
+// search
 $(".search-btn").click(async function () {
+  displaySearchHistory();
+  //remove previous results
+  $(".day").empty();
   city = document.getElementById("city-picker").value;
-  console.log("city= " + city);
 
   // get coordinates for selected city
   const cityQuery = makeCityQuery(city);
-
   const cityCoords = await getCityCoords(cityQuery);
 
   // get weather for selected city
   const coords = loadLatLon(cityCoords);
   const queryURL = makeQueryUrl(coords);
   const weather = await getWeather(queryURL);
+
+  //  load results
   loadCurrentDay(weather);
   loadForecast(weather);
+  saveSearch(city);
 });
+
+// search from history
+/*
+$(".searchHistory-btn").click(function () {
+  //  this.setAttribute("id", "search-history-button");
+  //  city = $("#search-history-button").value;
+  console.log(city);
+});
+*/
