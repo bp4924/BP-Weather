@@ -1,5 +1,3 @@
-let hist1 = document.createElement("button");
-
 let currentWxCity = document.createElement("div");
 let currentTemp = document.createElement("div");
 let currentHumidity = document.createElement("div");
@@ -12,6 +10,7 @@ let today = moment().format("MM/DD/YYYY");
 // save to local storage
 // display last 5 cities in search-history
 // clear previous results before reload
+displaySearchHistory();
 
 function makeCityQuery(city) {
   const cityQueryString =
@@ -106,6 +105,8 @@ function loadCurrentDay(weather) {
   currentHumidity.innerHTML =
     "Humidity: " + Math.floor(weather.current.humidity) + "%";
   $(".current-weather").append(currentHumidity);
+
+  // Wind
   currentWind.innerHTML =
     "Wind from " +
     weather.current.wind_deg +
@@ -196,34 +197,49 @@ function getWxIcon(wxIconCode) {
 }
 
 function saveSearch(city) {
-  const searchHistory = JSON.parse(localStorage.getItem("search")) || [];
-  const maxItems = 3;
-  console.log(searchHistory.length);
+  // check search history
+  const searchHistory = JSON.parse(localStorage.getItem("searches")) || [];
+  const maxItems = 5;
 
   let counter = searchHistory.length;
-  if (counter == maxItems) {
+  if (counter >= maxItems) {
     counter = 0;
+    searchHistory.splice(0, 1);
+    counter = searchHistory.length;
   }
 
-  const searchItem = "search-" + counter;
-  console.log(searchItem);
+  //  const searchItem = "search";
 
   const search = {
-    search: searchItem,
+    search: "City",
     name: city,
   };
 
-  searchHistory.splice(maxItems);
   searchHistory.push(search);
-  console.log(search);
 
-  localStorage.setItem("search", JSON.stringify(searchHistory));
-  console.log("new " + searchHistory.length);
-  //  window.location.assign("highscores.html");
+  localStorage.setItem("searches", JSON.stringify(searchHistory));
+
+  displaySearchHistory();
+}
+
+function displaySearchHistory() {
+  $(".search-history").empty();
+  const searchHistory = JSON.parse(localStorage.getItem("searches")) || [];
+
+  const counter = searchHistory.length;
+
+  for (var i = 0; i < counter; i++) {
+    let histBtn = document.createElement("button");
+    histBtn.innerHTML = searchHistory[i].name;
+    histBtn.classList.add("search-btn");
+    histBtn.classList.add("searchHistory-btn");
+    $(".search-history").append(histBtn);
+  }
 }
 
 // search
 $(".search-btn").click(async function () {
+  displaySearchHistory();
   //remove previous results
   $(".day").empty();
   city = document.getElementById("city-picker").value;
@@ -242,3 +258,12 @@ $(".search-btn").click(async function () {
   loadForecast(weather);
   saveSearch(city);
 });
+
+// search from history
+/*
+$(".searchHistory-btn").click(function () {
+  //  this.setAttribute("id", "search-history-button");
+  //  city = $("#search-history-button").value;
+  console.log(city);
+});
+*/
