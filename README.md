@@ -26,7 +26,7 @@ Responsive design
 
 ## Screenshot
 
-![App Screenshot](https://github.com/bp4924/BP-Weather/blob/main/Assets/ss1.png)
+![App Screenshot](https://github.com/bp4924/BP-Weather/blob/main/Assets/ss1.jpg)
 
 ## Link
 
